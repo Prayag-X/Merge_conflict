@@ -58,11 +58,11 @@ class ExpressionEvaluator {
       return false;
     }
 
-    double parseExpression();
-    double parseTerm();
-    double parseFactor();
+    late double Function() parseExpression;
+    late double Function() parseTerm;
+    late double Function() parseFactor;
 
-    double parseExpression() {
+    parseExpression = () {
       double x = parseTerm();
       for (;;) {
         if (eat(43)) { // '+'
@@ -73,9 +73,9 @@ class ExpressionEvaluator {
           return x;
         }
       }
-    }
+    };
 
-    double parseTerm() {
+    parseTerm = () {
       double x = parseFactor();
       for (;;) {
         if (eat(42)) { // '*'
@@ -88,9 +88,9 @@ class ExpressionEvaluator {
           return x;
         }
       }
-    }
+    };
 
-    double parseFactor() {
+    parseFactor = () {
       if (eat(43)) return parseFactor(); // unary plus
       if (eat(45)) return -parseFactor(); // unary minus
 
@@ -109,7 +109,7 @@ class ExpressionEvaluator {
       }
 
       return x;
-    }
+    };
 
     nextChar();
     double result = parseExpression();
@@ -323,7 +323,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           vx: vx,
           vy: vy,
           size: size,
-          color: baseColor.withOpacity(0.9),
+          color: baseColor.withValues(alpha: 0.9),
         ));
       }
     });
@@ -413,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           vx: (random.nextDouble() - 0.5) * 3,
           vy: random.nextDouble() * 3.5 + 2.0,
           size: random.nextDouble() * 4.0 + 2.0,
-          color: const Color(0xFF00FFFF).withOpacity(0.8),
+          color: const Color(0xFF00FFFF).withValues(alpha: 0.8),
         ));
       }
     });
@@ -485,7 +485,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           child: Text(
             widget.title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
             ),
@@ -572,15 +572,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.025),
+                                  color: Colors.white.withValues(alpha: 0.025),
                                   borderRadius: BorderRadius.circular(28.0),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.08),
+                                    color: Colors.white.withValues(alpha: 0.08),
                                     width: 1.5,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.25),
+                                      color: Colors.black.withValues(alpha: 0.25),
                                       blurRadius: 25.0,
                                       offset: const Offset(0, 8),
                                     ),
@@ -626,8 +626,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                           shadows: [
                                             Shadow(
                                               color: _calculatedResult == 'Error'
-                                                  ? const Color(0xFFFF003C).withOpacity(0.5)
-                                                  : _equalColor.withOpacity(0.25),
+                                                  ? const Color(0xFFFF003C).withValues(alpha: 0.5)
+                                                  : _equalColor.withValues(alpha: 0.25),
                                               blurRadius: 18.0,
                                             ),
                                           ],
@@ -650,10 +650,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             child: Container(
                               padding: const EdgeInsets.all(18.0),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.015),
+                                color: Colors.white.withValues(alpha: 0.015),
                                 borderRadius: BorderRadius.circular(28.0),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.06),
+                                  color: Colors.white.withValues(alpha: 0.06),
                                   width: 1.2,
                                 ),
                               ),
@@ -794,15 +794,15 @@ class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerPr
             scale: scale,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.035),
+                color: Colors.white.withValues(alpha: 0.035),
                 borderRadius: BorderRadius.circular(20.0),
                 border: Border.all(
-                  color: widget.color.withOpacity(0.12 + (_pressController.value * 0.2)),
+                  color: widget.color.withValues(alpha: 0.12 + (_pressController.value * 0.2)),
                   width: 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.color.withOpacity(0.04 + (_pressController.value * 0.12)),
+                    color: widget.color.withValues(alpha: 0.04 + (_pressController.value * 0.12)),
                     blurRadius: 12,
                     spreadRadius: 1,
                   ),
@@ -817,7 +817,7 @@ class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerPr
                     color: widget.color,
                     shadows: [
                       Shadow(
-                        color: widget.color.withOpacity(0.2),
+                        color: widget.color.withValues(alpha: 0.2),
                         blurRadius: 4.0,
                       ),
                     ],
@@ -862,8 +862,8 @@ class BackgroundPainter extends CustomPainter {
     final double orb1y = size.height * 0.32 + size.height * 0.08 * math.sin(phase);
     final Paint orb1Paint = Paint()
       ..color = isCyberTheme
-          ? const Color(0xFF39FF14).withOpacity(0.12)
-          : const Color(0xFF8A2BE2).withOpacity(0.15)
+          ? const Color(0xFF39FF14).withValues(alpha: 0.12)
+          : const Color(0xFF8A2BE2).withValues(alpha: 0.15)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 95.0);
     canvas.drawCircle(Offset(orb1x, orb1y), 160.0, orb1Paint);
 
@@ -872,8 +872,8 @@ class BackgroundPainter extends CustomPainter {
     final double orb2y = size.height * 0.68 + size.height * 0.11 * math.cos(phase + 1.6);
     final Paint orb2Paint = Paint()
       ..color = isCyberTheme
-          ? const Color(0xFF00FFFF).withOpacity(0.12)
-          : const Color(0xFFFF007F).withOpacity(0.12)
+          ? const Color(0xFF00FFFF).withValues(alpha: 0.12)
+          : const Color(0xFFFF007F).withValues(alpha: 0.12)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 100.0);
     canvas.drawCircle(Offset(orb2x, orb2y), 190.0, orb2Paint);
 
@@ -882,8 +882,8 @@ class BackgroundPainter extends CustomPainter {
     final double orb3y = size.height * 0.52 + size.height * 0.07 * math.cos(phase - 1.8);
     final Paint orb3Paint = Paint()
       ..color = isCyberTheme
-          ? const Color(0xFFFFE600).withOpacity(0.08)
-          : const Color(0xFF00FFFF).withOpacity(0.08)
+          ? const Color(0xFFFFE600).withValues(alpha: 0.08)
+          : const Color(0xFF00FFFF).withValues(alpha: 0.08)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 115.0);
     canvas.drawCircle(Offset(orb3x, orb3y), 170.0, orb3Paint);
   }
@@ -906,7 +906,7 @@ class ParticlePainter extends CustomPainter {
     for (var p in particles) {
       if (p.life <= 0) continue;
       final Paint paint = Paint()
-        ..color = p.color.withOpacity(p.opacity)
+        ..color = p.color.withValues(alpha: p.opacity)
         ..style = PaintingStyle.fill
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.8);
 
