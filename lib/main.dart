@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -65,9 +66,11 @@ class ExpressionEvaluator {
     parseExpression = () {
       double x = parseTerm();
       for (;;) {
-        if (eat(43)) { // '+'
+        if (eat(43)) {
+          // '+'
           x += parseTerm();
-        } else if (eat(45)) { // '-'
+        } else if (eat(45)) {
+          // '-'
           x -= parseTerm();
         } else {
           return x;
@@ -78,9 +81,11 @@ class ExpressionEvaluator {
     parseTerm = () {
       double x = parseFactor();
       for (;;) {
-        if (eat(42)) { // '*'
+        if (eat(42)) {
+          // '*'
           x *= parseFactor();
-        } else if (eat(47)) { // '/'
+        } else if (eat(47)) {
+          // '/'
           double divisor = parseFactor();
           if (divisor == 0.0) throw Exception('Div by zero');
           x /= divisor;
@@ -96,10 +101,12 @@ class ExpressionEvaluator {
 
       double x;
       int startPos = pos;
-      if (eat(40)) { // '('
+      if (eat(40)) {
+        // '('
         x = parseExpression();
         if (!eat(41)) throw Exception('Missing closing )');
-      } else if ((ch >= 48 && ch <= 57) || ch == 46) { // numbers & decimal point
+      } else if ((ch >= 48 && ch <= 57) || ch == 46) {
+        // numbers & decimal point
         while ((ch >= 48 && ch <= 57) || ch == 46) {
           nextChar();
         }
@@ -175,11 +182,9 @@ class _ShakeWidgetState extends State<ShakeWidget> {
       animation: widget.controller,
       builder: (context, child) {
         // Elastic shake using sine wave oscillation
-        final double offset = 15.0 * math.sin(widget.controller.value * 4 * math.pi);
-        return Transform.translate(
-          offset: Offset(offset, 0.0),
-          child: child,
-        );
+        final double offset =
+            15.0 * math.sin(widget.controller.value * 4 * math.pi);
+        return Transform.translate(offset: Offset(offset, 0.0), child: child);
       },
       child: widget.child,
     );
@@ -207,10 +212,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final List<Particle> _particles = [];
 
   // Controllers
-  late AnimationController _bgController;       // Drifting space background
-  late AnimationController _physicsController;  // 60FPS particle physics loop
+  late AnimationController _bgController; // Drifting space background
+  late AnimationController _physicsController; // 60FPS particle physics loop
   late AnimationController _entranceController; // Keyboard staggered entry
-  late AnimationController _shakeController;    // Error glass shake
+  late AnimationController _shakeController; // Error glass shake
 
   // Entrance animations
   late Animation<double> _cardScale;
@@ -219,21 +224,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool _isCyberTheme = false; // Cosmic Space vs Cyberpunk theme toggler
 
   // Colors Palette - Space Purple Theme
-  final Color _spaceDigitColor = const Color(0xFF00FFFF);    // Neon Cyan
+  final Color _spaceDigitColor = const Color(0xFF00FFFF); // Neon Cyan
   final Color _spaceOperatorColor = const Color(0xFFFF007F); // Neon Hot Pink
-  final Color _spaceActionColor = const Color(0xFF8A2BE2);   // Neon Violet
-  final Color _spaceEqualColor = const Color(0xFF39FF14);    // Glowing Green
+  final Color _spaceActionColor = const Color(0xFF8A2BE2); // Neon Violet
+  final Color _spaceEqualColor = const Color(0xFF39FF14); // Glowing Green
 
   // Colors Palette - Cyberpunk Theme
-  final Color _cyberDigitColor = const Color(0xFF39FF14);    // Neon Lime Green
+  final Color _cyberDigitColor = const Color(0xFF39FF14); // Neon Lime Green
   final Color _cyberOperatorColor = const Color(0xFFFF5F1F); // Neon Orange
-  final Color _cyberActionColor = const Color(0xFFFFE600);   // Neon Yellow
-  final Color _cyberEqualColor = const Color(0xFF00FFFF);    // Cyber Cyan
+  final Color _cyberActionColor = const Color(0xFFFFE600); // Neon Yellow
+  final Color _cyberEqualColor = const Color(0xFF00FFFF); // Cyber Cyan
 
   // Get active colors based on theme choice
   Color get _digitColor => _isCyberTheme ? _cyberDigitColor : _spaceDigitColor;
-  Color get _operatorColor => _isCyberTheme ? _cyberOperatorColor : _spaceOperatorColor;
-  Color get _actionColor => _isCyberTheme ? _cyberActionColor : _spaceActionColor;
+  Color get _operatorColor =>
+      _isCyberTheme ? _cyberOperatorColor : _spaceOperatorColor;
+  Color get _actionColor =>
+      _isCyberTheme ? _cyberActionColor : _spaceActionColor;
   Color get _equalColor => _isCyberTheme ? _cyberEqualColor : _spaceEqualColor;
 
   @override
@@ -247,25 +254,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     )..repeat();
 
     // 2. 60FPS Physics Tick loop (conserves battery when clear)
-    _physicsController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..addListener(() {
-        if (_particles.isNotEmpty) {
-          setState(() {
-            for (int i = _particles.length - 1; i >= 0; i--) {
-              _particles[i].update();
-              if (_particles[i].life <= 0) {
-                _particles.removeAt(i);
+    _physicsController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1))
+          ..addListener(() {
+            if (_particles.isNotEmpty) {
+              setState(() {
+                for (int i = _particles.length - 1; i >= 0; i--) {
+                  _particles[i].update();
+                  if (_particles[i].life <= 0) {
+                    _particles.removeAt(i);
+                  }
+                }
+              });
+            } else {
+              if (_physicsController.isAnimating) {
+                _physicsController.stop();
               }
             }
           });
-        } else {
-          if (_physicsController.isAnimating) {
-            _physicsController.stop();
-          }
-        }
-      });
 
     // 3. Page Entry sequence
     _entranceController = AnimationController(
@@ -317,14 +323,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
         final double size = random.nextDouble() * 5.0 + 3.0;
 
-        _particles.add(Particle(
-          x: globalPosition.dx,
-          y: globalPosition.dy,
-          vx: vx,
-          vy: vy,
-          size: size,
-          color: baseColor.withValues(alpha: 0.9),
-        ));
+        _particles.add(
+          Particle(
+            x: globalPosition.dx,
+            y: globalPosition.dy,
+            vx: vx,
+            vy: vy,
+            size: size,
+            color: baseColor.withValues(alpha: 0.9),
+          ),
+        );
       }
     });
 
@@ -347,7 +355,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           _calculatedResult = '0';
           _isEvaluated = false;
         } else if (_inputExpression.isNotEmpty) {
-          _inputExpression = _inputExpression.substring(0, _inputExpression.length - 1);
+          _inputExpression = _inputExpression.substring(
+            0,
+            _inputExpression.length - 1,
+          );
         }
       } else if (label == '=') {
         _evaluateMathExpression();
@@ -380,7 +391,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           _calculatedResult = result.toInt().toString();
         } else {
           // Max decimal precision format
-          _calculatedResult = double.parse(result.toStringAsFixed(6)).toString();
+          _calculatedResult = double.parse(
+            result.toStringAsFixed(6),
+          ).toString();
         }
         _isEvaluated = true;
       });
@@ -407,14 +420,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
     setState(() {
       for (int i = 0; i < 25; i++) {
-        _particles.add(Particle(
-          x: centerX + (random.nextDouble() - 0.5) * 250,
-          y: 200.0 + (random.nextDouble() - 0.5) * 60,
-          vx: (random.nextDouble() - 0.5) * 3,
-          vy: random.nextDouble() * 3.5 + 2.0,
-          size: random.nextDouble() * 4.0 + 2.0,
-          color: const Color(0xFF00FFFF).withValues(alpha: 0.8),
-        ));
+        _particles.add(
+          Particle(
+            x: centerX + (random.nextDouble() - 0.5) * 250,
+            y: 200.0 + (random.nextDouble() - 0.5) * 60,
+            vx: (random.nextDouble() - 0.5) * 3,
+            vy: random.nextDouble() * 3.5 + 2.0,
+            size: random.nextDouble() * 4.0 + 2.0,
+            color: const Color(0xFF00FFFF).withValues(alpha: 0.8),
+          ),
+        );
       }
     });
     if (!_physicsController.isAnimating) {
@@ -430,14 +445,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
     setState(() {
       for (int i = 0; i < 30; i++) {
-        _particles.add(Particle(
-          x: centerX + (random.nextDouble() - 0.5) * 150,
-          y: 220.0,
-          vx: (random.nextDouble() - 0.5) * 7.0,
-          vy: (random.nextDouble() - 0.5) * 5.0 - 2.0,
-          size: random.nextDouble() * 5.0 + 3.0,
-          color: const Color(0xFFFF003C), // Glowing Warning Red
-        ));
+        _particles.add(
+          Particle(
+            x: centerX + (random.nextDouble() - 0.5) * 150,
+            y: 220.0,
+            vx: (random.nextDouble() - 0.5) * 7.0,
+            vy: (random.nextDouble() - 0.5) * 5.0 - 2.0,
+            size: random.nextDouble() * 5.0 + 3.0,
+            color: const Color(0xFFFF003C), // Glowing Warning Red
+          ),
+        );
       }
     });
     if (!_physicsController.isAnimating) {
@@ -456,14 +473,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         final double angle = random.nextDouble() * 2 * math.pi;
         final double speed = random.nextDouble() * 5.5 + 3.0;
 
-        _particles.add(Particle(
-          x: centerX,
-          y: 200.0,
-          vx: math.cos(angle) * speed,
-          vy: math.sin(angle) * speed - 1.5,
-          size: random.nextDouble() * 4.0 + 3.0,
-          color: _equalColor,
-        ));
+        _particles.add(
+          Particle(
+            x: centerX,
+            y: 200.0,
+            vx: math.cos(angle) * speed,
+            vy: math.sin(angle) * speed - 1.5,
+            size: random.nextDouble() * 4.0 + 3.0,
+            color: _equalColor,
+          ),
+        );
       }
     });
     if (!_physicsController.isAnimating) {
@@ -496,7 +515,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           IconButton(
             icon: Icon(
               _isCyberTheme ? Icons.bolt : Icons.bolt_outlined,
-              color: _isCyberTheme ? const Color(0xFF39FF14) : const Color(0xFFFF007F),
+              color: _isCyberTheme
+                  ? const Color(0xFF39FF14)
+                  : const Color(0xFFFF007F),
               size: 28,
             ),
             onPressed: () {
@@ -506,14 +527,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 // Theme switch rain sparkles
                 final random = math.Random();
                 for (int i = 0; i < 20; i++) {
-                  _particles.add(Particle(
-                    x: random.nextDouble() * size.width,
-                    y: 70.0 + random.nextDouble() * 20.0,
-                    vx: (random.nextDouble() - 0.5) * 2,
-                    vy: random.nextDouble() * 3 + 1,
-                    size: random.nextDouble() * 4.0 + 2.0,
-                    color: _isCyberTheme ? const Color(0xFF39FF14) : const Color(0xFF8A2BE2),
-                  ));
+                  _particles.add(
+                    Particle(
+                      x: random.nextDouble() * size.width,
+                      y: 70.0 + random.nextDouble() * 20.0,
+                      vx: (random.nextDouble() - 0.5) * 2,
+                      vy: random.nextDouble() * 3 + 1,
+                      size: random.nextDouble() * 4.0 + 2.0,
+                      color: _isCyberTheme
+                          ? const Color(0xFF39FF14)
+                          : const Color(0xFF8A2BE2),
+                    ),
+                  );
                 }
               });
               if (!_physicsController.isAnimating) {
@@ -544,7 +569,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
                 child: AnimatedBuilder(
                   animation: _entranceController,
                   builder: (context, child) {
@@ -567,10 +595,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(28.0),
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 18.0, sigmaY: 18.0),
+                              filter: ImageFilter.blur(
+                                sigmaX: 18.0,
+                                sigmaY: 18.0,
+                              ),
                               child: Container(
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24.0,
+                                  vertical: 28.0,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withValues(alpha: 0.025),
                                   borderRadius: BorderRadius.circular(28.0),
@@ -580,7 +614,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.25),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.25,
+                                      ),
                                       blurRadius: 25.0,
                                       offset: const Offset(0, 8),
                                     ),
@@ -594,7 +630,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       scrollDirection: Axis.horizontal,
                                       reverse: true,
                                       child: Text(
-                                        _inputExpression.isEmpty ? ' ' : _inputExpression,
+                                        _inputExpression.isEmpty
+                                            ? ' '
+                                            : _inputExpression,
                                         style: TextStyle(
                                           fontSize: 22.0,
                                           color: Colors.white38,
@@ -607,16 +645,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
                                     // Dynamic Output Display (Fades when calculating)
                                     AnimatedSwitcher(
-                                      duration: const Duration(milliseconds: 250),
-                                      transitionBuilder: (Widget child, Animation<double> animation) {
-                                        return FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        );
-                                      },
+                                      duration: const Duration(
+                                        milliseconds: 250,
+                                      ),
+                                      transitionBuilder:
+                                          (
+                                            Widget child,
+                                            Animation<double> animation,
+                                          ) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
                                       child: Text(
                                         _calculatedResult,
-                                        key: ValueKey<String>(_calculatedResult),
+                                        key: ValueKey<String>(
+                                          _calculatedResult,
+                                        ),
                                         style: TextStyle(
                                           fontSize: 48.0,
                                           fontWeight: FontWeight.bold,
@@ -625,9 +671,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                               : Colors.white,
                                           shadows: [
                                             Shadow(
-                                              color: _calculatedResult == 'Error'
-                                                  ? const Color(0xFFFF003C).withValues(alpha: 0.5)
-                                                  : _equalColor.withValues(alpha: 0.25),
+                                              color:
+                                                  _calculatedResult == 'Error'
+                                                  ? const Color(
+                                                      0xFFFF003C,
+                                                    ).withValues(alpha: 0.5)
+                                                  : _equalColor.withValues(
+                                                      alpha: 0.25,
+                                                    ),
                                               blurRadius: 18.0,
                                             ),
                                           ],
@@ -646,7 +697,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(28.0),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 18.0, sigmaY: 18.0),
+                            filter: ImageFilter.blur(
+                              sigmaX: 18.0,
+                              sigmaY: 18.0,
+                            ),
                             child: Container(
                               padding: const EdgeInsets.all(18.0),
                               decoration: BoxDecoration(
@@ -705,9 +759,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           // 3. Absolute Overlay Canvas for explosive neon tap sparks
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(
-                painter: ParticlePainter(_particles),
-              ),
+              child: CustomPaint(painter: ParticlePainter(_particles)),
             ),
           ),
         ],
@@ -747,7 +799,8 @@ class CalculatorButton extends StatefulWidget {
   State<CalculatorButton> createState() => _CalculatorButtonState();
 }
 
-class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerProviderStateMixin {
+class _CalculatorButtonState extends State<CalculatorButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pressController;
 
   @override
@@ -797,12 +850,16 @@ class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerPr
                 color: Colors.white.withValues(alpha: 0.035),
                 borderRadius: BorderRadius.circular(20.0),
                 border: Border.all(
-                  color: widget.color.withValues(alpha: 0.12 + (_pressController.value * 0.2)),
+                  color: widget.color.withValues(
+                    alpha: 0.12 + (_pressController.value * 0.2),
+                  ),
                   width: 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.color.withValues(alpha: 0.04 + (_pressController.value * 0.12)),
+                    color: widget.color.withValues(
+                      alpha: 0.04 + (_pressController.value * 0.12),
+                    ),
                     blurRadius: 12,
                     spreadRadius: 1,
                   ),
@@ -858,8 +915,10 @@ class BackgroundPainter extends CustomPainter {
     final double phase = progress * 2.0 * math.pi;
 
     // Drifting Orb 1
-    final double orb1x = size.width * 0.25 + size.width * 0.12 * math.cos(phase);
-    final double orb1y = size.height * 0.32 + size.height * 0.08 * math.sin(phase);
+    final double orb1x =
+        size.width * 0.25 + size.width * 0.12 * math.cos(phase);
+    final double orb1y =
+        size.height * 0.32 + size.height * 0.08 * math.sin(phase);
     final Paint orb1Paint = Paint()
       ..color = isCyberTheme
           ? const Color(0xFF39FF14).withValues(alpha: 0.12)
@@ -868,8 +927,10 @@ class BackgroundPainter extends CustomPainter {
     canvas.drawCircle(Offset(orb1x, orb1y), 160.0, orb1Paint);
 
     // Drifting Orb 2
-    final double orb2x = size.width * 0.75 + size.width * 0.09 * math.sin(phase + 1.6);
-    final double orb2y = size.height * 0.68 + size.height * 0.11 * math.cos(phase + 1.6);
+    final double orb2x =
+        size.width * 0.75 + size.width * 0.09 * math.sin(phase + 1.6);
+    final double orb2y =
+        size.height * 0.68 + size.height * 0.11 * math.cos(phase + 1.6);
     final Paint orb2Paint = Paint()
       ..color = isCyberTheme
           ? const Color(0xFF00FFFF).withValues(alpha: 0.12)
@@ -878,8 +939,10 @@ class BackgroundPainter extends CustomPainter {
     canvas.drawCircle(Offset(orb2x, orb2y), 190.0, orb2Paint);
 
     // Drifting Orb 3
-    final double orb3x = size.width * 0.5 + size.width * 0.07 * math.sin(phase - 1.8);
-    final double orb3y = size.height * 0.52 + size.height * 0.07 * math.cos(phase - 1.8);
+    final double orb3x =
+        size.width * 0.5 + size.width * 0.07 * math.sin(phase - 1.8);
+    final double orb3y =
+        size.height * 0.52 + size.height * 0.07 * math.cos(phase - 1.8);
     final Paint orb3Paint = Paint()
       ..color = isCyberTheme
           ? const Color(0xFFFFE600).withValues(alpha: 0.08)
@@ -890,7 +953,8 @@ class BackgroundPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant BackgroundPainter oldDelegate) {
-    return oldDelegate.progress != progress || oldDelegate.isCyberTheme != isCyberTheme;
+    return oldDelegate.progress != progress ||
+        oldDelegate.isCyberTheme != isCyberTheme;
   }
 }
 
