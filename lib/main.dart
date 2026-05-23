@@ -1,138 +1,160 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CalculatorApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CalculatorApp extends StatelessWidget {
+  const CalculatorApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Counter App',
+      title: 'Calculator',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const CalculatorScreen(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class CalculatorScreen extends StatefulWidget {
+  const CalculatorScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CalculatorScreen> createState() => _CalculatorScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int counter = 0;
+class _CalculatorScreenState extends State<CalculatorScreen> {
+  String output = "0";
+  double firstNumber = 0;
+  String operator = "";
 
-  void incrementCounter() {
+  void buttonPressed(String value) {
     setState(() {
-      counter++;
-    });
-  }
+      if (value == "C") {
+        output = "0";
+        firstNumber = 0;
+        operator = "";
+      } else if (value == "+" ||
+          value == "-" ||
+          value == "×" ||
+          value == "÷") {
+        firstNumber = double.parse(output);
+        operator = value;
+        output = "0";
+      } else if (value == "=") {
+        double secondNumber = double.parse(output);
+        double result = 0;
 
-  void decrementCounter() {
-    setState(() {
-      if (counter > 0) {
-        counter--;
+        if (operator == "+") {
+          result = firstNumber + secondNumber;
+        } else if (operator == "-") {
+          result = firstNumber - secondNumber;
+        } else if (operator == "×") {
+          result = firstNumber * secondNumber;
+        } else if (operator == "÷") {
+          result = firstNumber / secondNumber;
+        }
+
+        output = result.toString();
+      } else {
+        if (output == "0") {
+          output = value;
+        } else {
+          output += value;
+        }
       }
     });
   }
 
-  void resetCounter() {
-    setState(() {
-      counter = 0;
-    });
+  Widget buildButton(String text, Color color) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.all(22),
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+          ),
+          onPressed: () => buttonPressed(text),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Counter App"),
+        title: const Text("Calculator"),
         centerTitle: true,
-        elevation: 3,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 40,
-                vertical: 50,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.countertops,
-                    size: 70,
-                  ),
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    "Counter Value",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    "$counter",
-                    style: const TextStyle(
-                      fontSize: 55,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: decrementCounter,
-                        child: const Icon(Icons.remove),
-                      ),
-
-                      const SizedBox(width: 15),
-
-                      ElevatedButton(
-                        onPressed: incrementCounter,
-                        child: const Icon(Icons.add),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  OutlinedButton.icon(
-                    onPressed: resetCounter,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text("Reset"),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              alignment: Alignment.bottomRight,
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                output,
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
+
+          Row(
+            children: [
+              buildButton("7", Colors.grey),
+              buildButton("8", Colors.grey),
+              buildButton("9", Colors.grey),
+              buildButton("÷", Colors.orange),
+            ],
+          ),
+
+          Row(
+            children: [
+              buildButton("4", Colors.grey),
+              buildButton("5", Colors.grey),
+              buildButton("6", Colors.grey),
+              buildButton("×", Colors.orange),
+            ],
+          ),
+
+          Row(
+            children: [
+              buildButton("1", Colors.grey),
+              buildButton("2", Colors.grey),
+              buildButton("3", Colors.grey),
+              buildButton("-", Colors.orange),
+            ],
+          ),
+
+          Row(
+            children: [
+              buildButton("C", Colors.red),
+              buildButton("0", Colors.grey),
+              buildButton("=", Colors.green),
+              buildButton("+", Colors.orange),
+            ],
+          ),
+        ],
       ),
     );
   }
